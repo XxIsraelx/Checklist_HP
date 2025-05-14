@@ -469,5 +469,7 @@ def main(page: ft.Page):
         )
     )
 
+port = int(os.getenv("PORT", 8550))
+
 # Alteração: Permitir conexões externas com "host='0.0.0.0'"
-ft.app(target=main, view=WEB_BROWSER, port=8550)
+ft.app(target=main, port=port)
