@@ -11,6 +11,7 @@ from email.mime.text import MIMEText
 from dotenv import load_dotenv
 import os
 
+
 load_dotenv()
 
 def send_email(motorista, placa, km_atual, km_proxima):
@@ -68,15 +69,22 @@ def send_email(motorista, placa, km_atual, km_proxima):
     except Exception as e:
         print(f"Erro inesperado: {e}")
 
-# Configuração do Google Sheets
-SHEET_ID = "1i-rMVsXIvx8Dr6q6X1hsXTRWxFpYHUeWwB98p9oFdYI"
-CREDENTIALS_FILE = "credentials.json"
 
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, scope)
-client = gspread.authorize(creds)
-sheet = client.open_by_key(SHEET_ID).sheet1  # Abre a primeira aba da planilha
 
+# ID da planilha
+SHEET_ID = "1i-rMVsXIvx8Dr6q6X1hsXTRWxFpYHUeWwB98p9oFdYI"
+
+# Carrega o conteúdo da chave do JSON da variável de ambiente
+creds_json = os.getenv("GOOGLE_CREDS_JSON")
+creds_dict = json.loads(creds_json)
+
+# Autenticação usando o dicionário da chave
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+client = gspread.authorize(creds)
+
+# Acesso à planilha
+sheet = client.open_by_key(SHEET_ID).sheet1
 # Antes de enviar dados, adiciona os cabeçalhos (apenas uma vez)
 def add_headers():
     headers = [
