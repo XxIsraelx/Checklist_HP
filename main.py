@@ -1,7 +1,7 @@
 import flet as ft
 import gspread
 import json
-from oauth2client.service_account import ServiceAccountCredentials
+from google.oauth2.service_account import Credentials
 import time
 import locale
 from flet import *
@@ -80,7 +80,9 @@ creds_json = os.getenv("GOOGLE_CREDS_JSON")
 creds_dict = json.loads(creds_json)
 
 # Autenticação usando o dicionário da chave
-creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
+
+# Autoriza e cria o cliente para acessar a planilha
 client = gspread.authorize(creds)
 
 # Acesso à planilha
