@@ -16,11 +16,6 @@ os.environ['LC_ALL'] = 'C'
 os.environ['LANG'] = 'C'
 os.environ['LANGUAGE'] = 'C'
 
-try:
-    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
-except locale.Error:
-    locale.setlocale(locale.LC_ALL, 'C')
-
 
 load_dotenv()
 
@@ -141,10 +136,6 @@ def main(page: ft.Page):
     page.vertical_alignment = ft.MainAxisAlignment.START
     page.scroll = "adaptive"
 
-    try:
-        locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
-    except locale.Error:
-        locale.setlocale(locale.LC_TIME, 'portuguese')
 
     items = [
         {"name": "Estado do Pneu", "checked": False, "comment": ""},
