@@ -12,13 +12,13 @@ from dotenv import load_dotenv
 import os
 import locale
 
-# Tenta definir a localidade para 'en_US.UTF-8'
 try:
-    # Tentativa de localidade comum (só se estiver disponível)
-    locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+    locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 except locale.Error:
-    # Usa localidade padrão (funciona mesmo em ambientes minimalistas como o Render)
-    locale.setlocale(locale.LC_ALL, 'C')
+    try:
+        locale.setlocale(locale.LC_TIME, 'en_US.UTF-8')
+    except locale.Error:
+        locale.setlocale(locale.LC_TIME, 'C')
 
 
 load_dotenv()
