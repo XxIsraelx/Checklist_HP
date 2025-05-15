@@ -19,60 +19,46 @@ os.environ['LANGUAGE'] = 'C'
 
 load_dotenv()
 
-def send_email(motorista, placa, km_atual, km_proxima):
+def send_email(motorista, placa, km_atual, km_proxima, itens_nao_ok):
     try:
-        # Configurações do e-mail
-        sender_email = "logistica.daltez@gmail.com"  # Substitua pelo seu e-mail
-        receiver_email = "isratete342@gmail.com"  # E-mail de destino (pode ser o do motorista ou outro)
-        password = "dhkf rqzw rgtf dmuh"  # Senha do seu e-mail
+        sender_email = "logistica.daltez@gmail.com"
+        receiver_email = "lucas.bessa@daltez.com.br"
+        password = "dhkf rqzw rgtf dmuh"
 
-        # Configura o servidor SMTP (usando o Gmail como exemplo)
         smtp_server = "smtp.gmail.com"
         smtp_port = 587
 
-        # Cria a mensagem de e-mail
+        observacoes = "\n".join(itens_nao_ok) if itens_nao_ok else "Todos os itens estão OK."
+
         subject = "Relatório de Checklist do Caminhão"
         body = f"""
-        Relatório de Checklist do Caminhão:
+Relatório de Checklist do Caminhão:
 
-        Motorista: {motorista}
-        Placa: {placa}
-        KM Atual: {km_atual}
-        KM da Próxima Troca: {km_proxima}
+Motorista: {motorista}
+Placa: {placa}
+KM Atual: {km_atual}
+KM da Próxima Troca: {km_proxima}
 
-        Detalhes adicionais podem ser encontrados no formulário enviado.
+Itens com observações ou não conformidades:
+{observacoes}
         """
 
-        # Criação do objeto MIME
         msg = MIMEMultipart()
         msg['From'] = sender_email
         msg['To'] = receiver_email
         msg['Subject'] = subject
         msg.attach(MIMEText(body, 'plain'))
 
-        print("Tentando conectar ao servidor SMTP...")
-
-        # Conexão ao servidor SMTP e envio do e-mail
         server = smtplib.SMTP(smtp_server, smtp_port)
-        server.starttls()  # Inicia a criptografia TLS
-        print("Conexão estabelecida. Tentando fazer login...")
-
-        server.login(sender_email, password)  # Login no servidor SMTP
-        print("Login bem-sucedido! Enviando o e-mail...")
-
-        server.sendmail(sender_email, receiver_email, msg.as_string())  # Envia o e-mail
-        server.quit()  # Fecha a conexão com o servidor SMTP
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, receiver_email, msg.as_string())
+        server.quit()
 
         print("E-mail enviado com sucesso!")
 
-    except smtplib.SMTPAuthenticationError as e:
-        print(f"Erro de autenticação: {e}")
-    except smtplib.SMTPConnectError as e:
-        print(f"Erro ao conectar com o servidor SMTP: {e}")
-    except smtplib.SMTPException as e:
-        print(f"Erro no envio do e-mail: {e}")
     except Exception as e:
-        print(f"Erro inesperado: {e}")
+        print(f"Erro ao enviar e-mail: {e}")
 
 
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
@@ -274,6 +260,7 @@ def main(page: ft.Page):
         motorista_dropdown = ft.TextField(
             label="Digite o nome do Motorista",
             width=300,
+            border_radius=5
         )
 
 
@@ -282,7 +269,8 @@ def main(page: ft.Page):
             options=[ft.dropdown.Option(p) for p in placas],
             width=250,
             value=None,
-            label="Placa do caminhão"
+            label="Placa do caminhão",
+            border_radius=5
         )
 
         dialog = AlertDialog(
@@ -319,29 +307,32 @@ def main(page: ft.Page):
     
         # Lista para armazenar os feedbacks dos itens
         item_data = []
-    
-        # Verifica os itens do checklist e define os valores conforme solicitado
+        itens_nao_ok = []
+
         for item in items:
-            if item["checked"]:  # Se o item foi marcado
+            nome = item["name"]
+            if item["checked"]:
                 comment = item["comment_input"].value.strip()
-                if comment == "":  # Se o usuário não escreveu nada
+                if comment == "":
                     item_data.append("NÃO OK")
+                    itens_nao_ok.append(f"{nome}: NÃO OK (sem observação)")
                 else:
-                    item_data.append(comment)  # Envia o que o usuário escreveu
+                    item_data.append(comment)
+                    itens_nao_ok.append(f"{nome}: {comment}")
             else:
-                item_data.append("OK")  # Se o item não foi marcado, envia "OK"
+                item_data.append("OK")
     
         # A linha com os dados que será enviada para a planilha
         row = [
             data_hora, motorista, placa, km_atual, km_proxima,
             *item_data,
-            observacao_field.value  # Aqui você adiciona a observação do usuário
+            observacao_field.value # Aqui você adiciona a observação do usuário
         ]
     
         # Adiciona a nova linha à planilha
         sheet.append_row(row)
 
-        send_email(motorista, placa, km_atual, km_proxima)
+        send_email(motorista, placa, km_atual, km_proxima, itens_nao_ok)
 
         # Feedback para o usuário
         page.add(ft.Text("Formulário Enviado!"))
