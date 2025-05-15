@@ -22,9 +22,9 @@ load_dotenv()
 def send_email(motorista, placa, km_atual, km_proxima):
     try:
         # Configurações do e-mail
-        sender_email = os.getenv("sender_email")  # Substitua pelo seu e-mail
-        receiver_email = os.getenv("receiver_email")  # E-mail de destino (pode ser o do motorista ou outro)
-        password = os.getenv("password")  # Senha do seu e-mail
+        sender_email = "logistica.daltez@gmail.com"  # Substitua pelo seu e-mail
+        receiver_email = "isratete342@gmail.com"  # E-mail de destino (pode ser o do motorista ou outro)
+        password = "dhkf rqzw rgtf dmuh"  # Senha do seu e-mail
 
         # Configura o servidor SMTP (usando o Gmail como exemplo)
         smtp_server = "smtp.gmail.com"
