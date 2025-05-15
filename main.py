@@ -12,13 +12,14 @@ from dotenv import load_dotenv
 import os
 import locale
 
+os.environ['LC_ALL'] = 'C'
+os.environ['LANG'] = 'C'
+os.environ['LANGUAGE'] = 'C'
+
 try:
-    locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
+    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 except locale.Error:
-    try:
-        locale.setlocale(locale.LC_TIME, 'en_US.UTF-8')
-    except locale.Error:
-        locale.setlocale(locale.LC_TIME, 'C')
+    locale.setlocale(locale.LC_ALL, 'C')
 
 
 load_dotenv()
