@@ -21,9 +21,9 @@ load_dotenv()
 
 def send_email(motorista, placa, km_atual, km_proxima, itens_nao_ok):
     try:
-        sender_email = "logistica.daltez@gmail.com"
-        receiver_email = "isratete342@gmail.com"
-        password = "dhkf rqzw rgtf dmuh"
+        sender_email = "ti.daltez@gmail.com"
+        receiver_email = "lucas.bessa@daltez.com.br"
+        password = "movh zwfc gzau kjva"
 
         smtp_server = "smtp.gmail.com"
         smtp_port = 587
