@@ -256,22 +256,28 @@ def main(page: ft.Page):
 
     # Função para exibir o pop-up de confirmação de envio
     def show_confirm_pop_up():
-        global motorista_dropdown, placa_dropdown
+        global motorista_dropdown, placa_dropdown, confirm_send_button
 
         motorista_dropdown = ft.TextField(
             label="Digite o nome do Motorista",
             width=300,
-            border_radius=5
+            border_radius=5,
+            on_change=lambda e: validate_confirmation_fields()  # Adiciona validação quando o campo muda
         )
-
-
 
         placa_dropdown = ft.Dropdown(
             options=[ft.dropdown.Option(p) for p in placas],
             width=250,
             value=None,
             label="Placa do caminhão",
-            border_radius=5
+            border_radius=5,
+            on_change=lambda e: validate_confirmation_fields()  # Adiciona validação quando o campo muda
+        )
+
+        confirm_send_button = ft.TextButton(
+            text="Enviar", 
+            on_click=lambda e: send_form(dialog),
+            disabled=True  # Inicialmente desabilitado
         )
 
         dialog = AlertDialog(
@@ -286,10 +292,18 @@ def main(page: ft.Page):
                 spacing=10
             ),
             actions=[
-                ft.TextButton(text="Enviar", on_click=lambda e: send_form(dialog)),
+                confirm_send_button,
                 ft.TextButton(text="Cancelar", on_click=lambda e: close_dialog(dialog)),
             ],
         )
+
+        def validate_confirmation_fields():
+            # Habilita o botão apenas se ambos os campos estiverem preenchidos
+            motorista_preenchido = motorista_dropdown.value and motorista_dropdown.value.strip() != ""
+            placa_preenchida = placa_dropdown.value is not None
+            
+            confirm_send_button.disabled = not (motorista_preenchido and placa_preenchida)
+            page.update()
 
         page.add(dialog)
         dialog.open = True
