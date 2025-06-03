@@ -349,10 +349,18 @@ def main(page: ft.Page):
 
         send_email(motorista, placa, km_atual, km_proxima, itens_nao_ok)
 
-        # Feedback para o usuário
-        page.add(ft.Text("Formulário Enviado!"))
-        close_dialog(dialog)  # Fecha o pop-up após o envio
+        close_dialog(dialog)
 
+        success_dialog = ft.AlertDialog(
+            title=ft.Text("Sucesso!"),
+            content=ft.Text("Formulário enviado com sucesso."),
+            actions=[
+                ft.TextButton("OK", on_click=lambda e: close_dialog(success_dialog))
+            ]
+        )
+        page.add(success_dialog)
+        success_dialog.open = True
+        page.update()
 
 
     def close_dialog(dialog):
